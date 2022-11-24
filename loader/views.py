@@ -53,4 +53,13 @@ class LoadDataAPIView(GenericAPIView):
 
 class GetBillsAPIVIew(ListAPIView):
     serializer_class = BillSerializer
-    queryset = Bill.objects.all()
+
+    def get_queryset(self):
+        queryset = Bill.objects.all()
+        client = self.request.query_params.get('client')
+        if client is not None:
+            queryset = queryset.filter(client__name=client)
+        org = self.request.query_params.get('org')
+        if org is not None:
+            queryset = queryset.filter(org__name=org)
+        return queryset
